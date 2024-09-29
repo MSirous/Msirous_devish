@@ -1,0 +1,47 @@
+security:
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: name  # احراز هویت بر اساس فیلد name
+
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+            algorithm: auto
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        
+
+        login:
+            pattern: ^/api/login
+            stateless: true
+            json_login:
+                check_path: /api/login_check
+                username_path: name  # استفاده از فیلد name برای ورود
+                password_path: ''    # بدون نیاز به رمز عبور
+
+        api:
+            pattern: ^/api
+            stateless: true
+            provider: app_user_provider
+            jwt: ~
+
+    role_hierarchy:
+        ROLE_SUPER_ADMIN: [ROLE_COMPANY_ADMIN, ROLE_USER]
+        ROLE_COMPANY_ADMIN: [ROLE_USER]
+
+    access_control:
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+
+when@test:
+    security:
+        password_hashers:
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4  # Lowest possible value for bcrypt
+                time_cost: 3  # Lowest possible value for argon
+                memory_cost: 10  # Lowest possible value for argon

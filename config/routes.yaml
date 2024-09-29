@@ -1,0 +1,7 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+login_check:
+    path: /api/login_check
+    controller: App\Controller\AuthController::loginCheck
